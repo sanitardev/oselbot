@@ -67,9 +67,9 @@ async def posting(message: Message, state: FSMContext):
         return
     ids = ut.select("private", "user_id", many=True)
     chats = ut.select("sqlite_master", "name", "type", 'table', many=True)
-    logging.warn(chats)
+    logging.warning(chats)
     for table in ut.removetables:
-        logging.warn(table)
+        logging.warning(table)
         chats.remove(table)
     ids.extend(chats)
     post_count = 0
@@ -170,13 +170,13 @@ async def test(message: types.Message):
         try:
             who = await bot.get_chat_member(usid[0], usid[0])
         except Exception as e:
-            logging.warn(e)
+            logging.warning(e)
             continue
-        logging.warn(who.user.first_name)
+        logging.warning(who.user.first_name)
         try:
             ut.update("inventory", "user_name", who.user.first_name, "user_id", usid[0])
         except Exception as e:
-            logging.warn(e)
+            logging.warning(e)
 
 
 @dp.message_handler(is_admin=True, commands="genkey")

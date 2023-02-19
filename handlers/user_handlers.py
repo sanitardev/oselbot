@@ -298,8 +298,7 @@ async def help(message: types.Message):
 
 
 @rate_limit(2, "stat")
-@dp.message_handler(Text(["Statistics", "Stat", "Стат", "Стата", "Статистика"], ignore_case=True), is_group=True,
-                    is_ban=False, )
+@dp.message_handler(Text(["Statistics", "Stat", "Стат", "Стата", "Статистика"], ignore_case=True), is_group=True, is_ban=False)
 @dp.message_handler(is_group=True, is_ban=False, commands=["stat", "statistics"])
 async def stat(message: types.Message):
     chat = str(message.chat.id)
@@ -436,6 +435,7 @@ async def use(message: types.Message):
 🍌 Презерватив — уменьшает боль от пиздюлей.
 🎬 Порно-фильм — увеличивает ипания/пиздюли в 5 раз.
 🧪 Морфин - если асел тебя отпиздит, задержка сброситься.
+🧴 Лечебная мазь - лечит очко асла.
 
 Что-бы использовать предмет, используй команду /use [смайлик предмета]"""))
     else:
@@ -455,7 +455,7 @@ async def use(message: types.Message):
         if uses[emoji.index(text)] == "viagra_use" and inventory["break"] == 1:
             await message.reply(bold("У асла разорвано очко!"))
             return
-        if uses[emoji.index(text)] == "viagra_use" and inventory["break"] == 0:
+        if uses[emoji.index(text)] == "heal_use" and inventory["break"] == 0:
             await message.reply(bold("У асла не разорвано очко!"))
             return
         ut.update("inventory", items[emoji.index(text)], 1, "user_id", usid, "-")
