@@ -2,3 +2,4 @@ db/
 db/database.db
 __pycache__/
 handlers/__pycache__/
+backup.zip
