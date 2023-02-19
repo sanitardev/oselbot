@@ -1,6 +1,7 @@
 import sqlite3
 from aiogram.utils.markdown import hlink
 
+
 def mention(mess):
     first = mess.from_user.first_name
     id = mess.from_user.id
@@ -39,6 +40,7 @@ def ending(one, two, many, num):
     else:
         return many
 
+
 # def invert(dct):
 #     return dict(map(reversed, dct.items()))
 class Item:
@@ -57,10 +59,13 @@ class Item:
     def deuse(self, chat, usid):
         Utils.update(chat, self.id, 0, "user_id", usid)
 
+
 class Utils:
-    conn = sqlite3.connect("db/database.db")
-    cur = conn.cursor()
-    conn.isolation_level = None
+    def __init__(self):
+        self.conn = sqlite3.connect("db/database.db")
+        self.cur = self.conn.cursor()
+        self.conn.isolation_level = None
+        
     removetables = [("admins",), ("inventory",), ("keys",), ("private",), ("products",)]
     oselpass = [[2, "viagra", "💊"], [5, "condoms", "🍌"], [2, "morfin", "🧪"], [3, "beer", "🍺"], [4, "vodka", "🍾"],
                 [5, "viagra", "💊"], [1, "pornfilm", "🎬"], [4, "beer", "🍺"], [5, "vodka", "🍾"], [5, "viagra", "💊"],
@@ -94,9 +99,11 @@ class Utils:
     chancelist = [i.chance for i in all_items.values()]
     tableslist = []
     tableslist.extend(itemlist)
-    tableslist.extend(["bonus_time", "coins", "whip", "whip_use", "energy", "dildo", "reward_lvl", "osel_counter", "reward", "skin", "vitamine", "vibrator"])
-    uselist = [i+"_use" for i in itemlist]
-    datalist = ["use_"+i for i in itemlist]
+    tableslist.extend(
+        ["bonus_time", "coins", "whip", "whip_use", "energy", "dildo", "reward_lvl", "osel_counter", "reward", "skin",
+         "vitamine", "vibrator"])
+    uselist = [i + "_use" for i in itemlist]
+    datalist = ["use_" + i for i in itemlist]
 
     skin_stickers = {
         "skin0": "CAACAgIAAxkBAAEHZb9jzqSaToUoUJi0EOuMgxWzsoJ9xAAC-iMAAgLkeEqIUzZx6VLkIC0E",
@@ -184,7 +191,7 @@ class Utils:
             res_select = None
         return res_select
 
-    def select_inventory(self, msg = None, reply=None, call=None, id=None):
+    def select_inventory(self, msg=None, reply=None, call=None, id=None):
         inventory = {}
         if id is not None:
             usid = id

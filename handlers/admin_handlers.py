@@ -183,7 +183,7 @@ async def test(message: types.Message):
 async def genkey(message: types.Message):
     text = message.get_args().split()
     if len(text) == 2:
-        key = generate(5, '-', 5, 5, type_of_value='hex').get_key()
+        key = generate(8, '-', 5, 5, type_of_value='hex').get_key()
         maxuses = text[0]
         reward = text[1]
         ut.insert("keys", "key", key)
