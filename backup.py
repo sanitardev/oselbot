@@ -16,6 +16,7 @@ async def backup():
             pass
         else:
             break
+        await asyncio.sleep(1.5)
 
 
 async def scheduler():
