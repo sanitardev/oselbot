@@ -7,6 +7,7 @@ from buttons import *
 from key_generator.key_generator import generate
 import os
 import logging
+from utils import code
 
 ut = Utils()
 
@@ -48,7 +49,8 @@ async def give(message: types.Message):
         ut.update("inventory", it_name, text[1], "user_id", reply_usid, "+")
     else:
         ut.update(chat_id, it_name, text[1], "user_id", reply_usid, "+")
-    await message.reply(bold(f"Я успешно выдал пользователю {mention_reply(message)}, {text[1]} {ending(endslist[item_list.index(it_name)][0], endslist[item_list.index(it_name)][1], endslist[item_list.index(it_name)][2], int(text[1]))}{text[0]}!"))
+    await message.reply(bold(
+        f"Я успешно выдал пользователю {mention_reply(message)}, {text[1]} {ending(endslist[item_list.index(it_name)][0], endslist[item_list.index(it_name)][1], endslist[item_list.index(it_name)][2], int(text[1]))}{text[0]}!"))
 
 
 @dp.message_handler(is_private=True, is_admin=True, commands="post")
@@ -65,9 +67,9 @@ async def posting(message: Message, state: FSMContext):
         return
     ids = ut.select("private", "user_id", many=True)
     chats = ut.select("sqlite_master", "name", "type", 'table', many=True)
-    logging.warn (chats)
+    logging.warn(chats)
     for table in ut.removetables:
-        logging.warn (table)
+        logging.warn(table)
         chats.remove(table)
     ids.extend(chats)
     post_count = 0
@@ -168,13 +170,13 @@ async def test(message: types.Message):
         try:
             who = await bot.get_chat_member(usid[0], usid[0])
         except Exception as e:
-            logging.warn (e)
+            logging.warn(e)
             continue
-        logging.warn (who.user.first_name)
+        logging.warn(who.user.first_name)
         try:
             ut.update("inventory", "user_name", who.user.first_name, "user_id", usid[0])
         except Exception as e:
-            logging.warn (e)
+            logging.warn(e)
 
 
 @dp.message_handler(is_admin=True, commands="genkey")
@@ -187,7 +189,7 @@ async def genkey(message: types.Message):
         ut.insert("keys", "key", key)
         ut.update("keys", "maxuses", maxuses, "key", key)
         ut.update("keys", "reward", reward, "key", key)
-        await message.reply(f"Ключ {key} успешно сгенерирован.")
+        await message.reply(f"Ключ {code(key)} успешно сгенерирован.")
 
 
 @dp.message_handler(is_admin=True, commands="delkey")
