@@ -8,8 +8,8 @@ from collections import Counter
 import re
 from aiogram import md
 
-
 ut = Utils()
+
 
 @rate_limit(2, "start")
 @dp.message_handler(commands=['start'])
@@ -22,8 +22,10 @@ async def start(message: types.Message):
     await message.reply(bold(f"""Приветствую тебя, я — развлекательный бот для групп.
 {text}"""), reply_markup=start_button())
 
+
 @rate_limit(2, "osel")
-@dp.message_handler(Text(["osel", "асёл", "асел", "осел", "осёл"], ignore_case=True), is_group=True, is_ban=False)
+@dp.message_handler(Text(["osel", "асёл", "асел", "осел", "осёл", "аслина", "ослина"], ignore_case=True), is_group=True,
+                    is_ban=False)
 @dp.message_handler(is_group=True, is_ban=False, commands=['osel', 'asel'])
 async def osel(message: types.Message):
     chat = str(message.chat.id)
@@ -105,7 +107,6 @@ async def osel(message: types.Message):
         ut.update(chat, "pornfilm_use", 0, "user_id", usid)
         mutliplier += 5
 
-
     if mutliplier != 0:
         randomik *= mutliplier
 
@@ -132,7 +133,7 @@ async def osel(message: types.Message):
     nameslist = ["", ["оселкоин", "оселкоина", "оселкоинов"]]
     nameslist.extend(ut.endslist)
 
-    chance = random.choices(chancelist, [40 if inventory["vibrator"] == 1 else 80, 40]+ut.chancelist, k=1)[0]
+    chance = random.choices(chancelist, [40 if inventory["vibrator"] == 1 else 80, 40] + ut.chancelist, k=1)[0]
     if chance != "":
         itemrandom = random.randint(1, 3)
         ut.update("inventory", chance, itemrandom, "user_id", usid, "+")
@@ -167,6 +168,7 @@ async def osel(message: types.Message):
         else:
             ut.update(chat, "time", int(time()) + 14400, "user_id", usid)
 
+
 @rate_limit(2, "bonus")
 @dp.message_handler(Text(["Бонус", "Bonus"], ignore_case=True), is_group=True, is_ban=False)
 @dp.message_handler(is_group=True, is_ban=False, commands=['bonus'])
@@ -199,7 +201,7 @@ async def bonus(message: types.Message):
             else:
                 await message.reply(bold(f"Приходи через {mins} {ending('минуту', 'минуты', 'минут', mins)}."))
             return
-    bonus = random.choices(bonus_list, [35 if inventory["vibrator"] == 1 else 70, 40, 30]+ut.chancelist, k=3)
+    bonus = random.choices(bonus_list, [35 if inventory["vibrator"] == 1 else 70, 40, 30] + ut.chancelist, k=3)
     bonlist = []
     for bon in bonus:
         if bon == "":
@@ -251,8 +253,10 @@ async def top(message: types.Message):
         best, top = ["", ""]
     await message.reply(bold(f"Топ 10 людей по количеству ипаний.\n{best}{top}"))
 
+
 @rate_limit(2, "globaltop")
-@dp.message_handler(Text(["Глобальный топ", "Глобальный рейтинг", "Глобалтоп", "Глобал топ", "Globaltop", "Global top"], ignore_case=True), is_group=True)
+@dp.message_handler(Text(["Глобальный топ", "Глобальный рейтинг", "Глобалтоп", "Глобал топ", "Globaltop", "Global top"],
+                         ignore_case=True), is_group=True)
 @dp.message_handler(is_group=True, commands="globaltop")
 async def globaltop(message: types.Message):
     top = ""
@@ -275,6 +279,7 @@ async def globaltop(message: types.Message):
     best = f"👑 {md.quote_html(best_name)} — {best_count} {ending('ипание', 'ипания', 'ипаний', best_count)}.\n"
     await message.reply(bold(f"Глобальный топ 10 людей по количеству ипаний.\n{best}{top}"))
 
+
 @rate_limit(2, "help")
 @dp.message_handler(Text(["Help", "Помощь"], ignore_case=True))
 @dp.message_handler(commands="help")
@@ -293,7 +298,8 @@ async def help(message: types.Message):
 
 
 @rate_limit(2, "stat")
-@dp.message_handler(Text(["Statistics", "Stat", "Стат", "Стата", "Статистика"], ignore_case=True), is_group=True, is_ban=False,)
+@dp.message_handler(Text(["Statistics", "Stat", "Стат", "Стата", "Статистика"], ignore_case=True), is_group=True,
+                    is_ban=False, )
 @dp.message_handler(is_group=True, is_ban=False, commands=["stat", "statistics"])
 async def stat(message: types.Message):
     chat = str(message.chat.id)
@@ -327,6 +333,7 @@ async def stat(message: types.Message):
 
 Инвентарь:
 {inv}"""))
+
 
 @rate_limit(2, "trade")
 @dp.message_handler(is_group=True, is_ban=False, commands="trade")
@@ -378,12 +385,15 @@ async def trade(message: types.Message):
         return
     ut.update("inventory", it_name, text[1], "user_id", reply_usid, "+")
     ut.update("inventory", it_name, text[1], "user_id", usid, "-")
-    await message.reply(bold(f"Я успешно передал пользователю {mention_reply(message)}, {text[1]} {ending(endslist[item_list.index(it_name)][0], endslist[item_list.index(it_name)][1], endslist[item_list.index(it_name)][2], int(text[1]))}{text[0]}!"))
+    await message.reply(bold(
+        f"Я успешно передал пользователю {mention_reply(message)}, {text[1]} {ending(endslist[item_list.index(it_name)][0], endslist[item_list.index(it_name)][1], endslist[item_list.index(it_name)][2], int(text[1]))}{text[0]}!"))
+
 
 @rate_limit(2, "shop")
 @dp.message_handler(is_group=True, commands="shop")
 async def shop(message: types.Message):
-    await message.reply(bold("► Магазин🏪 ◄"), reply_markup=add_inline([["Предметы", "passive"], ["Скины", "skins"], ["Расходники", "items"]]))
+    await message.reply(bold("► Магазин🏪 ◄"),
+                        reply_markup=add_inline([["Предметы", "passive"], ["Скины", "skins"], ["Расходники", "items"]]))
 
 
 @dp.callback_query_handler(text=["passive", "skins", "items", "shop_back"])
@@ -400,10 +410,12 @@ async def shop_handler(call: types.CallbackQuery):
     elif call.data == "items":
         await call.message.edit_text(bold("""► Магазин Расходников🏪 ◄"""), reply_markup=items_button())
     elif call.data == "shop_back":
-        await call.message.edit_text(bold("► Магазин🏪 ◄"), reply_markup=add_inline([["Предметы", "passive"], ["Скины", "skins"], ["Расходники", "items"]]))
+        await call.message.edit_text(bold("► Магазин🏪 ◄"), reply_markup=add_inline(
+            [["Предметы", "passive"], ["Скины", "skins"], ["Расходники", "items"]]))
+
 
 @rate_limit(2, "use")
-@dp.message_handler(Text(["Юз", "Use"], ignore_case=True), is_group=True, is_ban=False)
+@dp.message_handler(Text(["Юз", "Use", "заюзать"], ignore_case=True), is_group=True, is_ban=False)
 @dp.message_handler(is_group=True, is_ban=False, commands="use")
 async def use(message: types.Message):
     ut.create_table(message)
@@ -449,6 +461,7 @@ async def use(message: types.Message):
         ut.update("inventory", items[emoji.index(text)], 1, "user_id", usid, "-")
         ut.update(chat, uses[emoji.index(text)], 1, "user_id", usid)
         await message.reply(bold("Ты успешно заюзал предмет!"))
+
 
 @rate_limit(2, "pass")
 @dp.message_handler(is_group=True, is_ban=False, commands="pass")
@@ -500,6 +513,7 @@ async def pass_callback(call: types.CallbackQuery):
 Аселпасс пройден!"""), reply_markup=pass_button())
     else:
         await call.answer(text=f"Ты не можешь забрать награду!", show_alert=True)
+
 
 @rate_limit(2, "usekey")
 @dp.message_handler(is_group=True, is_ban=False, commands="usekey")
@@ -584,7 +598,7 @@ async def use(call: types.CallbackQuery):
         if coins >= price:
             ut.update("inventory", "coins", price, "user_id", usid, "-")
             ut.update("inventory", "skin", skinid, "user_id", usid)
-            ut.update("inventory", "skin_list", skin_list+f"_{call.data}", "user_id", usid)
+            ut.update("inventory", "skin_list", skin_list + f"_{call.data}", "user_id", usid)
             await call.answer(text="Ты успешно купил этот скин!", show_alert=True)
         else:
             await call.answer(text="У тебя нет столько ослокоинов!", show_alert=True)
