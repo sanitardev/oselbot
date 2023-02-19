@@ -1,7 +1,6 @@
-from aiogram.dispatcher.filters import BoundFilter, Filter
+from aiogram.dispatcher.filters import BoundFilter
 import config
 from buttons import *
-import time
 
 
 class IsAdminFilter(BoundFilter):
