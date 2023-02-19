@@ -1,6 +1,7 @@
 import utils
 from dotenv import load_dotenv
 from os import getenv
+import logging
 
 load_dotenv()
 
@@ -15,11 +16,11 @@ def add_admin(user_id):
     global admin_ids
     ut.insert("admins", "user_id", user_id)
     admin_ids = [int(x) for t in ut.select("admins", "user_id", many=True) for x in t]
-    print(admin_ids)
+    logging.warn(admin_ids)
 
 
 def del_admin(user_id):
     global admin_ids
     ut.delete("admins", "user_id", user_id)
     admin_ids = [int(x) for t in ut.select("admins", "user_id", many=True) for x in t]
-    print(admin_ids)
+    logging.warn(admin_ids)

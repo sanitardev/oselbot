@@ -6,7 +6,7 @@ from utils import *
 from buttons import *
 from key_generator.key_generator import generate
 import os
-
+import logging
 
 ut = Utils()
 
@@ -65,9 +65,9 @@ async def posting(message: Message, state: FSMContext):
         return
     ids = ut.select("private", "user_id", many=True)
     chats = ut.select("sqlite_master", "name", "type", 'table', many=True)
-    print(chats)
+    logging.warn (chats)
     for table in ut.removetables:
-        print(table)
+        logging.warn (table)
         chats.remove(table)
     ids.extend(chats)
     post_count = 0
@@ -168,13 +168,13 @@ async def test(message: types.Message):
         try:
             who = await bot.get_chat_member(usid[0], usid[0])
         except Exception as e:
-            print(e)
+            logging.warn (e)
             continue
-        print(who.user.first_name)
+        logging.warn (who.user.first_name)
         try:
             ut.update("inventory", "user_name", who.user.first_name, "user_id", usid[0])
         except Exception as e:
-            print(e)
+            logging.warn (e)
 
 
 @dp.message_handler(is_admin=True, commands="genkey")

@@ -1,6 +1,5 @@
 import asyncio
 from asyncio import exceptions
-
 from aiogram import Bot, Dispatcher, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import DEFAULT_RATE_LIMIT
@@ -8,7 +7,6 @@ from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram.dispatcher.handler import current_handler, CancelHandler
 from aiogram.dispatcher.middlewares import BaseMiddleware
 from aiogram.utils.exceptions import Throttled, RetryAfter
-
 from config import token
 from utils import *
 import logging
@@ -41,7 +39,7 @@ async def exception_handler(update: types.Update, exception: RetryAfter):
     try:
         user = update.message.from_user.id
         who = await bot.get_chat_member(update.message.chat.id, user)
-        print(f"Спам от {who}")
+        logging.warn (f"Спам от {who}")
     except:
         pass
 
