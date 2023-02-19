@@ -66,6 +66,8 @@ class Utils:
         self.cur = self.conn.cursor()
         self.conn.isolation_level = None
         
+    def close (self):
+        self.conn.close ()
     removetables = [("admins",), ("inventory",), ("keys",), ("private",), ("products",)]
     oselpass = [[2, "viagra", "💊"], [5, "condoms", "🍌"], [2, "morfin", "🧪"], [3, "beer", "🍺"], [4, "vodka", "🍾"],
                 [5, "viagra", "💊"], [1, "pornfilm", "🎬"], [4, "beer", "🍺"], [5, "vodka", "🍾"], [5, "viagra", "💊"],

@@ -19,4 +19,5 @@ def genkey():
     ut.insert("keys", "key", key)
     ut.update("keys", "maxuses", maxuses, "key", key)
     ut.update("keys", "reward", reward, "key", key)
+    ut.close()
     return f"{key}"
