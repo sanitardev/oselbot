@@ -28,7 +28,7 @@ async def random_ipaniy(usid, chat):
     inventory = ut.select_inventory(id=usid)
     mutliplier = 0
     randomik = 0
-    logging.info("random_ipaniy")
+    print("random_ipaniy")
     if inventory["vibrator"] == 1:
         luck_chance = [30, 70]
     else:
@@ -78,7 +78,7 @@ async def random_ipaniy(usid, chat):
 async def is_break(usid, chat):
     inventory = ut.select_inventory(id=usid)
     breaks = random.choices([False, True], [100, 10], k=1)[0]
-    logging.info("is_break")
+    print("is_break")
     if breaks:
         ut.update(chat, "break", 1, "user_id", usid)
         if inventory["vitamine"] == 1:
@@ -90,7 +90,7 @@ async def is_break(usid, chat):
 
 
 async def random_item(usid):
-    logging.info("random_item")
+    print("random_item")
     inventory = ut.select_inventory(id=usid)
     chancelist = ["", "coins"]
     chancelist.extend(ut.itemlist)
@@ -106,7 +106,7 @@ async def random_item(usid):
 
 
 async def handle_delay(usid, chat):
-    logging.info("handle_delay")
+    print("handle_delay")
     inventory = ut.select_inventory(id=usid)
     if inventory["viagra_use"] == 1:
         ut.update(chat, "time", 0, "user_id", usid)
@@ -126,7 +126,7 @@ async def handle_delay(usid, chat):
 
 
 async def set_delay(usid, chat, randomik):
-    logging.info("set_delay")
+    print("set_delay")
     inventory = ut.select_inventory(id=usid)
     times = int(time()) + 3600
     if inventory["breaks"] != 1:
@@ -145,7 +145,7 @@ async def set_delay(usid, chat, randomik):
 
 
 async def time_parse(timer):
-    logging.info("time_parse")
+    print("time_parse")
     sec = int(timer) - int(time())
     mins = int(sec / 60)
     hours = int(mins / 60)
