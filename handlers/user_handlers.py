@@ -70,7 +70,6 @@ async def random_ipaniy(usid, chat):
     else:
         text = f"у тебя не получилось выипать асла."
     stop = time() - start
-    print(stop, "random_ipaniy")
     return text, balance, randomik
 
 
@@ -88,7 +87,6 @@ async def is_break(usid, chat):
     else:
         text = "Следующая попытка через час!"
     stop = time() - start
-    print(stop, "is_break")
     return text, breaks
 
 
@@ -108,7 +106,6 @@ async def random_item(usid, chat):
         print(stop, 'random_item')
         return [itemrandom, ending(nameslist[idlist][0], nameslist[idlist][1], nameslist[idlist][2], itemrandom)]
     stop = time() - start
-    print(stop, 'random_item')
     return False, False
 
 
@@ -137,7 +134,6 @@ async def handle_delay(usid, chat):
             return await time_parse(timer)
     else:
         stop = time() - start
-        print(stop, "handle_delay")
         return False
 
 
@@ -159,7 +155,6 @@ async def set_delay(usid, chat, randomik):
         else:
             ut.update(chat, "time", int(time()) + 14400, "user_id", usid)
     stop = time() - start
-    print(stop, "set_delay")
 
 async def time_parse(timer):
     start = time()
