@@ -338,7 +338,8 @@ async def help(message: types.Message):
 /shop — магазин
 /stat — статистика
 /top — топ 10 людей по ипанию
-/globaltop - глобальный топ 10 людей по ипанию"""))
+/globaltop - глобальный топ 10 людей по ипанию
+/usekey (ключ) - использовать промо-ключ"""))
 
 
 @rate_limit(2, "stat")
