@@ -139,7 +139,7 @@ async def inv(message: types.Message):
         await message.reply(inv)
     else:
         text = message.get_args()
-        inv = ut.select_inventory(message, id=int(text))
+        inv = ut.select_inventory(id=int(text), chat=message.chat.id)
         await message.reply(inv)
 
 
