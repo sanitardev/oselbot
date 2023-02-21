@@ -34,7 +34,7 @@ def button(inv, ut):
     emojilist = ut.emojilist
 
     for item in itemslist:
-        if inv[item] != 0 and inv[useslist[itemslist.index(item)]] == 0:
+        if inv[item] > 0 and inv[useslist[itemslist.index(item)]] == 0:
             name = endslist[itemslist.index(item)][0]
             emoji = emojilist[itemslist.index(item)]
             keyboard.add(types.InlineKeyboardButton(text=f"Юзнуть {name}{emoji}",

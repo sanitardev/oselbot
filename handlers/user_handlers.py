@@ -658,7 +658,7 @@ async def use(call: types.CallbackQuery):
             return
         inventory = ut.select_inventory(call, call=True)
         idlist = uselist.index(call.data)
-        if not inventory[itemlist[idlist]] == 0:
+        if inventory[itemlist[idlist]] > 0:
             if call.data == "use_viagra" and inventory["break"] == 1:
                 if inventory["heal_use"] == 0:
                     await call.answer(text="У асла разорвано очко!", show_alert=True)
