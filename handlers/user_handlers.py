@@ -484,7 +484,7 @@ async def use(message: types.Message):
         if not text in emoji:
             await message.reply(bold("Такого предмета не существует!"))
             return
-        if inventory[items[emoji.index(text)]] == 0:
+        if not inventory[items[emoji.index(text)]] > 0:
             await message.reply(bold("У тебя нет такого предмета!"))
             return
         if inventory[uses[emoji.index(text)]] != 0:
