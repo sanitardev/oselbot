@@ -103,7 +103,6 @@ async def random_item(usid, chat):
         ut.update("inventory", chance, itemrandom, "user_id", usid, "+")
         idlist = chancelist.index(chance)
         stop = time() - start
-        print(stop, 'random_item')
         return [itemrandom, ending(nameslist[idlist][0], nameslist[idlist][1], nameslist[idlist][2], itemrandom)]
     stop = time() - start
     return False, False
@@ -126,11 +125,9 @@ async def handle_delay(usid, chat):
             ut.update(chat, "time", 0, "user_id", usid)
             ut.update(chat, "break", 0, "user_id", usid)
             stop = time() - start
-            print(stop, "handle_delay")
             return False
         else:
             stop = time() - start
-            print(stop, "handle_delay")
             return await time_parse(timer)
     else:
         stop = time() - start
