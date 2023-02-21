@@ -1,4 +1,3 @@
-import logging
 from dp import dp, rate_limit
 from utils import *
 from aiogram.dispatcher.filters import Text
@@ -25,10 +24,9 @@ async def start(message: types.Message):
 
 
 async def random_ipaniy(usid, chat):
-    inventory = ut.select_inventory(id=usid)
+    start = time()
+    inventory = ut.select_inventory(id=usid, chat=chat)
     mutliplier = 0
-    randomik = 0
-    print("random_ipaniy")
     if inventory["vibrator"] == 1:
         luck_chance = [30, 70]
     else:
@@ -71,27 +69,32 @@ async def random_ipaniy(usid, chat):
         text = f"тебе удалось выипать асла {randomik} {ending('раз', 'раза', 'раз', randomik)}."
     else:
         text = f"у тебя не получилось выипать асла."
+    stop = time() - start
+    print(stop, "random_ipaniy")
     return text, balance, randomik
 
 
 
 async def is_break(usid, chat):
-    inventory = ut.select_inventory(id=usid)
+    start = time()
+    inventory = ut.select_inventory(id=usid, chat=chat)
     breaks = random.choices([False, True], [100, 10], k=1)[0]
-    print("is_break")
     if breaks:
         ut.update(chat, "break", 1, "user_id", usid)
         if inventory["vitamine"] == 1:
-            return "У осла разорвалось очко, и ты не можешь его ипать 2 часа!", breaks
+            text = "У осла разорвалось очко, и ты не можешь его ипать 2 часа!"
         else:
-            return "У осла разорвалось очко, и ты не можешь его ипать 4 часа!", breaks
+            text = "У осла разорвалось очко, и ты не можешь его ипать 4 часа!"
     else:
-        return "Следующая попытка через час!", breaks
+        text = "Следующая попытка через час!"
+    stop = time() - start
+    print(stop, "is_break")
+    return text, breaks
 
 
-async def random_item(usid):
-    print("random_item")
-    inventory = ut.select_inventory(id=usid)
+async def random_item(usid, chat):
+    start = time()
+    inventory = ut.select_inventory(id=usid, chat=chat)
     chancelist = ["", "coins"]
     chancelist.extend(ut.itemlist)
     nameslist = ["", ["оселкоин", "оселкоина", "оселкоинов"]]
@@ -101,13 +104,17 @@ async def random_item(usid):
         itemrandom = random.randint(1, 3)
         ut.update("inventory", chance, itemrandom, "user_id", usid, "+")
         idlist = chancelist.index(chance)
+        stop = time() - start
+        print(stop, 'random_item')
         return [itemrandom, ending(nameslist[idlist][0], nameslist[idlist][1], nameslist[idlist][2], itemrandom)]
-    return False
+    stop = time() - start
+    print(stop, 'random_item')
+    return False, False
 
 
 async def handle_delay(usid, chat):
-    print("handle_delay")
-    inventory = ut.select_inventory(id=usid)
+    start = time()
+    inventory = ut.select_inventory(id=usid, chat=chat)
     if inventory["viagra_use"] == 1:
         ut.update(chat, "time", 0, "user_id", usid)
         ut.update(chat, "viagra_use", 0, "user_id", usid)
@@ -115,21 +122,30 @@ async def handle_delay(usid, chat):
         ut.update(chat, "time", 0, "user_id", usid)
         ut.update(chat, "heal_use", 0, "user_id", usid)
         ut.update(chat, "break", 0, "user_id", usid)
+    inventory = ut.select_inventory(id=usid, chat=chat)
     timer = inventory["timer"]
     if not timer == 0:
         if int(timer) - int(time()) <= 0:
             ut.update(chat, "time", 0, "user_id", usid)
             ut.update(chat, "break", 0, "user_id", usid)
+            stop = time() - start
+            print(stop, "handle_delay")
             return False
         else:
+            stop = time() - start
+            print(stop, "handle_delay")
             return await time_parse(timer)
+    else:
+        stop = time() - start
+        print(stop, "handle_delay")
+        return False
 
 
 async def set_delay(usid, chat, randomik):
-    print("set_delay")
-    inventory = ut.select_inventory(id=usid)
+    inventory = ut.select_inventory(id=usid, chat=chat)
     times = int(time()) + 3600
-    if inventory["breaks"] != 1:
+    start = time()
+    if inventory["break"] != 1:
         if inventory["energy"] == 1:
             times = int(time()) + 1800
         ut.update(chat, "time", times, "user_id", usid)
@@ -142,21 +158,24 @@ async def set_delay(usid, chat, randomik):
             ut.update(chat, "time", int(time()) + 7200, "user_id", usid)
         else:
             ut.update(chat, "time", int(time()) + 14400, "user_id", usid)
-
+    stop = time() - start
+    print(stop, "set_delay")
 
 async def time_parse(timer):
-    print("time_parse")
+    start = time()
     sec = int(timer) - int(time())
     mins = int(sec / 60)
     hours = int(mins / 60)
     mins = int(mins % 60)
     if not hours == 0:
-       return f"Приходи через {hours} {ending('час', 'часа', 'часов', hours)} {mins} {ending('минуту', 'минуты', 'минут', mins)}."
+       text = f"Приходи через {hours} {ending('час', 'часа', 'часов', hours)} {mins} {ending('минуту', 'минуты', 'минут', mins)}."
     else:
         if not mins == 0:
-           return f"Приходи через {mins} {ending('минуту', 'минуты', 'минут', mins)}."
+           text = f"Приходи через {mins} {ending('минуту', 'минуты', 'минут', mins)}."
         else:
-            return f"Приходи через {sec} {ending('секунду', 'секунды', 'секунд', sec)}."
+            text = f"Приходи через {sec} {ending('секунду', 'секунды', 'секунд', sec)}."
+    stop = time() - start
+    return text
 
 
 @rate_limit(2, "osel")
@@ -172,8 +191,9 @@ async def osel(message: types.Message):
     skin = ut.skin_stickers["skin" + str(skin_id)]
     await message.reply_sticker(sticker=skin)
 
-    if await handle_delay(usid, chat):
-        viagra_text = await handle_delay(usid, chat)
+    delay = await handle_delay(usid, chat)
+    if delay:
+        viagra_text = delay
         await message.reply(bold(viagra_text), reply_markup=button(inventory, ut))
         return
 
@@ -183,8 +203,8 @@ async def osel(message: types.Message):
 
     viagra_text, breaks = await is_break(usid, chat)
 
-    if await random_item(usid, inventory):
-        itemrandom, ending_string = await random_item(usid)
+    itemrandom, ending_string = await random_item(usid, chat)
+    if itemrandom and ending_string is not False:
         viagra_text += f'\nТы получил {itemrandom} {ending_string}!'
 
     if inventory["reward_lvl"] != len(ut.oselpass):
@@ -223,15 +243,7 @@ async def bonus(message: types.Message):
         if int(timer) - int(time()) <= 0:
             ut.update("inventory", "bonus_time", 0, "user_id", usid)
         else:
-            sec = int(timer) - int(time())
-            mins = int(sec / 60)
-            hours = int(mins / 60)
-            mins = int(mins % 60)
-            if not hours == 0:
-                await message.reply(bold(
-                    f"Приходи через {hours} {ending('час', 'часа', 'часов', hours)} {mins} {ending('минуту', 'минуты', 'минут', mins)}."))
-            else:
-                await message.reply(bold(f"Приходи через {mins} {ending('минуту', 'минуты', 'минут', mins)}."))
+            await message.reply(bold(await time_parse(timer)))
             return
     bonus = random.choices(bonus_list, [35 if inventory["vibrator"] == 1 else 70, 40, 30] + ut.chancelist, k=3)
     bonlist = []
@@ -279,7 +291,7 @@ async def top(message: types.Message):
         try:
             best_name = ut.select("inventory", "user_name", "user_id", best_id)
         except:
-            pass
+            best_name = None
         best = f"👑 {md.quote_html(best_name)} — {best_count} {ending('ипание', 'ипания', 'ипаний', best_count)}.\n"
     except:
         best, top = ["", ""]
@@ -307,7 +319,7 @@ async def globaltop(message: types.Message):
     try:
         best_name = ut.select("inventory", "user_name", "user_id", best_id)
     except:
-        pass
+        best_name = None
     best = f"👑 {md.quote_html(best_name)} — {best_count} {ending('ипание', 'ипания', 'ипаний', best_count)}.\n"
     await message.reply(bold(f"Глобальный топ 10 людей по количеству ипаний.\n{best}{top}"))
 
@@ -655,8 +667,9 @@ async def use(call: types.CallbackQuery):
         idlist = uselist.index(call.data)
         if not inventory[itemlist[idlist]] == 0:
             if call.data == "use_viagra" and inventory["break"] == 1:
-                await call.answer(text="У асла разорвано очко!", show_alert=True)
-                return
+                if inventory["heal_use"] == 0:
+                    await call.answer(text="У асла разорвано очко!", show_alert=True)
+                    return
             if call.data == "use_heal" and inventory["break"] == 0:
                 await call.answer(text="У асла не разорвано очко!", show_alert=True)
                 return
