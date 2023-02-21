@@ -23,17 +23,10 @@ async def start(message: types.Message):
 {text}"""), reply_markup=start_button())
 
 
-@rate_limit(2, "osel")
-@dp.message_handler(Text(["osel", "асёл", "асел", "осел", "осёл", "аслина", "ослина"], ignore_case=True), is_group=True,
-                    is_ban=False)
-@dp.message_handler(is_group=True, is_ban=False, commands=['osel', 'asel'])
-async def osel(message: types.Message):
-    chat = str(message.chat.id)
-    usid = message.from_user.id
-    ut.create_table(message)
-    ut.insert(chat, "user_id", usid)
-    inventory = ut.select_inventory(message)
-    times = int(time()) + 3600
+async def random_ipaniy(usid, chat):
+    start = time()
+    inventory = ut.select_inventory(id=usid, chat=chat)
+    mutliplier = 0
     if inventory["vibrator"] == 1:
         luck_chance = [30, 70]
     else:
@@ -42,48 +35,6 @@ async def osel(message: types.Message):
         randomik = random.randint(0, 10)
     else:
         randomik = random.randint(-5, 0)
-
-    mutliplier = 0
-    times = int(time()) + 3600
-    randomik = random.randint(-5, 10)
-    ut.create_table(message)
-    ut.insert(chat, "user_id", usid)
-    inventory = ut.select_inventory(message)
-
-    if inventory["viagra_use"] == 1:
-        ut.update(chat, "time", 0, "user_id", usid)
-        ut.update(chat, "viagra_use", 0, "user_id", usid)
-    if inventory["heal_use"] == 1:
-        ut.update(chat, "time", 0, "user_id", usid)
-        ut.update(chat, "heal_use", 0, "user_id", usid)
-        ut.update(chat, "break", 0, "user_id", usid)
-    inventory = ut.select_inventory(message)
-    if not inventory["timer"] == 0:
-        if int(inventory["timer"]) - int(time()) <= 0:
-            ut.update(chat, "time", 0, "user_id", usid)
-            ut.update(chat, "break", 0, "user_id", usid)
-        else:
-            skin_id = inventory['skin']
-            skin = ut.skin_stickers["skin" + str(skin_id)]
-            await message.reply_sticker(sticker=skin)
-
-            sec = int(inventory["timer"]) - int(time())
-            mins = int(sec / 60)
-            hours = int(mins / 60)
-            if mins > 59:
-                mins = int(mins - hours * 60)
-                await message.reply(bold(
-                    f"Приходи через {hours} {ending('час', 'часа', 'часов', hours)} {mins} {ending('минуту', 'минуты', 'минут', mins)}."),
-                    reply_markup=button(inventory, ut))
-            else:
-                if not mins == 0:
-                    await message.reply(bold(f"Приходи через {mins} {ending('минуту', 'минуты', 'минут', mins)}."),
-                                        reply_markup=button(inventory, ut))
-                else:
-                    await message.reply(bold(f"Приходи через {sec} {ending('секунду', 'секунды', 'секунд', sec)}."),
-                                        reply_markup=button(inventory, ut))
-            return
-
     if inventory["vodka_use"] == 1:
         mutliplier += 2
         ut.update(chat, "vodka_use", 0, "user_id", usid)
@@ -106,55 +57,91 @@ async def osel(message: types.Message):
     if inventory["pornfilm_use"] == 1:
         ut.update(chat, "pornfilm_use", 0, "user_id", usid)
         mutliplier += 5
-
     if mutliplier != 0:
         randomik *= mutliplier
 
     ut.update(chat, "balance", randomik, "user_id", usid, "+")
     balance = ut.select(chat, "balance", "user_id", usid)
+
     if randomik < 0:
-        text = f"твой асел отпиздил тебя, и забрал {abs(randomik)} {ending('ипание', 'ипания', 'ипаний', randomik)}."
-    else:
+        text = f"твой асел уипал тебя, и забрал {abs(randomik)} {ending('ипание', 'ипания', 'ипаний', randomik)}."
+    elif randomik > 0:
         text = f"тебе удалось выипать асла {randomik} {ending('раз', 'раза', 'раз', randomik)}."
-    breaks = random.choices([0, 1], [100, 10], k=1)[0]
-
-    if breaks == 1:
-        if inventory["vitamine"] == 1:
-            viagra_text = "У осла разорвалось очко, и ты не можешь его ипать 2 часа!"
-
-        else:
-            viagra_text = "У осла разорвалось очко, и ты не можешь его ипать 4 часа!"
-        ut.update(chat, "break", 1, "user_id", usid)
     else:
-        viagra_text = "Следующая попытка через час!"
+        text = f"у тебя не получилось выипать асла."
+    stop = time() - start
+    return text, balance, randomik
 
+
+
+async def is_break(usid, chat):
+    start = time()
+    inventory = ut.select_inventory(id=usid, chat=chat)
+    breaks = random.choices([False, True], [100, 10], k=1)[0]
+    if breaks:
+        ut.update(chat, "break", 1, "user_id", usid)
+        if inventory["vitamine"] == 1:
+            text = "У осла разорвалось очко, и ты не можешь его ипать 2 часа!"
+        else:
+            text = "У осла разорвалось очко, и ты не можешь его ипать 4 часа!"
+    else:
+        text = "Следующая попытка через час!"
+    stop = time() - start
+    return text, breaks
+
+
+async def random_item(usid, chat):
+    start = time()
+    inventory = ut.select_inventory(id=usid, chat=chat)
     chancelist = ["", "coins"]
     chancelist.extend(ut.itemlist)
     nameslist = ["", ["оселкоин", "оселкоина", "оселкоинов"]]
     nameslist.extend(ut.endslist)
-
     chance = random.choices(chancelist, [40 if inventory["vibrator"] == 1 else 80, 40] + ut.chancelist, k=1)[0]
     if chance != "":
         itemrandom = random.randint(1, 3)
         ut.update("inventory", chance, itemrandom, "user_id", usid, "+")
         idlist = chancelist.index(chance)
-        viagra_text += f'\nТы получил {itemrandom} {ending(nameslist[idlist][0], nameslist[idlist][1], nameslist[idlist][2], itemrandom)}!'
+        stop = time() - start
+        print(stop, 'random_item')
+        return [itemrandom, ending(nameslist[idlist][0], nameslist[idlist][1], nameslist[idlist][2], itemrandom)]
+    stop = time() - start
+    return False, False
 
-    skin_id = inventory['skin']
-    skin = ut.skin_stickers["skin" + str(skin_id)]
-    await message.reply_sticker(sticker=skin)
 
-    if inventory["reward_lvl"] != len(ut.oselpass):
-        ut.update("inventory", "osel_counter", 1, "user_id", usid, "+")
-        inventory = ut.select_inventory(message)
-        if inventory["osel_counter"] >= 5:
-            ut.update("inventory", "reward_lvl", 1, "user_id", usid, "+")
-            ut.update("inventory", "osel_counter", 0, "user_id", usid)
+async def handle_delay(usid, chat):
+    start = time()
+    inventory = ut.select_inventory(id=usid, chat=chat)
+    if inventory["viagra_use"] == 1:
+        ut.update(chat, "time", 0, "user_id", usid)
+        ut.update(chat, "viagra_use", 0, "user_id", usid)
+    if inventory["heal_use"] == 1:
+        ut.update(chat, "time", 0, "user_id", usid)
+        ut.update(chat, "heal_use", 0, "user_id", usid)
+        ut.update(chat, "break", 0, "user_id", usid)
+    inventory = ut.select_inventory(id=usid, chat=chat)
+    timer = inventory["timer"]
+    if not timer == 0:
+        if int(timer) - int(time()) <= 0:
+            ut.update(chat, "time", 0, "user_id", usid)
+            ut.update(chat, "break", 0, "user_id", usid)
+            stop = time() - start
+            print(stop, "handle_delay")
+            return False
+        else:
+            stop = time() - start
+            print(stop, "handle_delay")
+            return await time_parse(timer)
+    else:
+        stop = time() - start
+        return False
 
-    await message.reply(bold(f"""{mention(message)}, {text}
-Теперь у тебя {balance} {ending("ипание", "ипания", "ипаний", balance)}.
-{viagra_text}"""), reply_markup=button(inventory, ut))
-    if breaks != 1:
+
+async def set_delay(usid, chat, randomik):
+    inventory = ut.select_inventory(id=usid, chat=chat)
+    times = int(time()) + 3600
+    start = time()
+    if inventory["break"] != 1:
         if inventory["energy"] == 1:
             times = int(time()) + 1800
         ut.update(chat, "time", times, "user_id", usid)
@@ -167,6 +154,66 @@ async def osel(message: types.Message):
             ut.update(chat, "time", int(time()) + 7200, "user_id", usid)
         else:
             ut.update(chat, "time", int(time()) + 14400, "user_id", usid)
+    stop = time() - start
+
+async def time_parse(timer):
+    start = time()
+    sec = int(timer) - int(time())
+    mins = int(sec / 60)
+    hours = int(mins / 60)
+    mins = int(mins % 60)
+    if not hours == 0:
+       text = f"Приходи через {hours} {ending('час', 'часа', 'часов', hours)} {mins} {ending('минуту', 'минуты', 'минут', mins)}."
+    else:
+        if not mins == 0:
+           text = f"Приходи через {mins} {ending('минуту', 'минуты', 'минут', mins)}."
+        else:
+            text = f"Приходи через {sec} {ending('секунду', 'секунды', 'секунд', sec)}."
+    stop = time() - start
+    return text
+
+
+@rate_limit(2, "osel")
+@dp.message_handler(Text(["osel", "асёл", "асел", "осел", "осёл", "аслина", "ослина"], ignore_case=True), is_group=True, is_ban=False)
+@dp.message_handler(is_group=True, is_ban=False, commands=['osel', 'asel'])
+async def osel(message: types.Message):
+    chat = str(message.chat.id)
+    usid = message.from_user.id
+    ut.create_table(message)
+    inventory = ut.select_inventory(message)
+
+    skin_id = inventory['skin']
+    skin = ut.skin_stickers["skin" + str(skin_id)]
+    await message.reply_sticker(sticker=skin)
+
+    delay = await handle_delay(usid, chat)
+    if delay:
+        viagra_text = delay
+        await message.reply(bold(viagra_text), reply_markup=button(inventory, ut))
+        return
+
+    inventory = ut.select_inventory(message)
+
+    text, balance, randomik = await random_ipaniy(usid, chat)
+
+    viagra_text, breaks = await is_break(usid, chat)
+
+    itemrandom, ending_string = await random_item(usid, chat)
+    if itemrandom and ending_string is not False:
+        viagra_text += f'\nТы получил {itemrandom} {ending_string}!'
+
+    if inventory["reward_lvl"] != len(ut.oselpass):
+        ut.update("inventory", "osel_counter", 1, "user_id", usid, "+")
+        inventory = ut.select_inventory(message)
+        if inventory["osel_counter"] >= 5:
+            ut.update("inventory", "reward_lvl", 1, "user_id", usid, "+")
+            ut.update("inventory", "osel_counter", 0, "user_id", usid)
+
+    await message.reply(bold(f"""{mention(message)}, {text}
+Теперь у тебя {balance} {ending("ипание", "ипания", "ипаний", balance)}.
+{viagra_text}"""), reply_markup=button(inventory, ut))
+    await set_delay(usid, chat, randomik)
+
 
 
 @rate_limit(2, "bonus")
@@ -191,15 +238,7 @@ async def bonus(message: types.Message):
         if int(timer) - int(time()) <= 0:
             ut.update("inventory", "bonus_time", 0, "user_id", usid)
         else:
-            sec = int(timer) - int(time())
-            mins = int(sec / 60)
-            hours = int(mins / 60)
-            mins = int(mins % 60)
-            if not hours == 0:
-                await message.reply(bold(
-                    f"Приходи через {hours} {ending('час', 'часа', 'часов', hours)} {mins} {ending('минуту', 'минуты', 'минут', mins)}."))
-            else:
-                await message.reply(bold(f"Приходи через {mins} {ending('минуту', 'минуты', 'минут', mins)}."))
+            await message.reply(bold(await time_parse(timer)))
             return
     bonus = random.choices(bonus_list, [35 if inventory["vibrator"] == 1 else 70, 40, 30] + ut.chancelist, k=3)
     bonlist = []
@@ -247,7 +286,7 @@ async def top(message: types.Message):
         try:
             best_name = ut.select("inventory", "user_name", "user_id", best_id)
         except:
-            pass
+            best_name = None
         best = f"👑 {md.quote_html(best_name)} — {best_count} {ending('ипание', 'ипания', 'ипаний', best_count)}.\n"
     except:
         best, top = ["", ""]
@@ -275,7 +314,7 @@ async def globaltop(message: types.Message):
     try:
         best_name = ut.select("inventory", "user_name", "user_id", best_id)
     except:
-        pass
+        best_name = None
     best = f"👑 {md.quote_html(best_name)} — {best_count} {ending('ипание', 'ипания', 'ипаний', best_count)}.\n"
     await message.reply(bold(f"Глобальный топ 10 людей по количеству ипаний.\n{best}{top}"))
 
@@ -294,7 +333,8 @@ async def help(message: types.Message):
 /shop — магазин
 /stat — статистика
 /top — топ 10 людей по ипанию
-/globaltop - глобальный топ 10 людей по ипанию"""))
+/globaltop - глобальный топ 10 людей по ипанию
+/usekey (ключ) - использовать промо-ключ"""))
 
 
 @rate_limit(2, "stat")
@@ -621,10 +661,11 @@ async def use(call: types.CallbackQuery):
             return
         inventory = ut.select_inventory(call, call=True)
         idlist = uselist.index(call.data)
-        if not inventory[itemlist[idlist]] == 0:
+        if inventory[itemlist[idlist]] > 0:
             if call.data == "use_viagra" and inventory["break"] == 1:
-                await call.answer(text="У асла разорвано очко!", show_alert=True)
-                return
+                if inventory["heal_use"] == 0:
+                    await call.answer(text="У асла разорвано очко!", show_alert=True)
+                    return
             if call.data == "use_heal" and inventory["break"] == 0:
                 await call.answer(text="У асла не разорвано очко!", show_alert=True)
                 return

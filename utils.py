@@ -91,7 +91,7 @@ class Utils:
                        "Ты успешно заюзал морфин, и если асел тебя отпиздит, задержка сброситься!",
                        ["морфин", "морфина", "морфинов"], 30),
         "heal": Item("heal", "лечебная мазь", "🧴", "Ты успешно заюзал мазь, и у асла вылечилось очко!",
-                     ["лечебную мазь", "лечебные мази", "лечебных мазей"], 30),
+                     ["лечебную мазь", "лечебные мази", "лечебных мазей"], 20),
     }
     itemlist = [i.id for i in all_items.values()]
     itemnamelist = [i.name for i in all_items.values()]
@@ -141,6 +141,7 @@ class Utils:
         except:
             pass
         self.insert("inventory", "user_id", msg.from_user.id)
+        self.insert(str(msg.chat.id), "user_id", msg.from_user.id)
         self.update("inventory", "user_name", msg.from_user.first_name, "user_id", msg.from_user.id)
 
     def insert(self, table, column, value):
@@ -193,11 +194,11 @@ class Utils:
             res_select = None
         return res_select
 
-    def select_inventory(self, msg=None, reply=None, call=None, id=None):
+    def select_inventory(self, msg=None, reply=None, call=None, id=None, chat=None):
         inventory = {}
-        if id is not None:
+        if id is not None and chat is not None:
             usid = id
-            chat = msg.chat.id
+            chat = chat
         else:
             usid = msg.from_user.id
             if call:
