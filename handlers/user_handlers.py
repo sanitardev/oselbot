@@ -206,6 +206,7 @@ async def osel(message: types.Message):
             ut.update("inventory", "reward_lvl", 1, "user_id", usid, "+")
             ut.update("inventory", "osel_counter", 0, "user_id", usid)
 
+    inventory = ut.select_inventory(message)
     await message.reply(bold(f"""{mention(message)}, {text}
 Теперь у тебя {balance} {ending("ипание", "ипания", "ипаний", balance)}.
 {viagra_text}"""), reply_markup=button(inventory, ut))
