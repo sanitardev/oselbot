@@ -5,3 +5,4 @@ handlers/__pycache__/
 backup.zip
 .fleet
 .fleet/run.json
+.env

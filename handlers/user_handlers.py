@@ -24,7 +24,6 @@ async def start(message: types.Message):
 
 
 async def random_ipaniy(usid, chat):
-    start = time()
     inventory = ut.select_inventory(id=usid, chat=chat)
     mutliplier = 0
     if inventory["vibrator"] == 1:
@@ -69,13 +68,11 @@ async def random_ipaniy(usid, chat):
         text = f"тебе удалось выипать асла {randomik} {ending('раз', 'раза', 'раз', randomik)}."
     else:
         text = f"у тебя не получилось выипать асла."
-    stop = time() - start
     return text, balance, randomik
 
 
 
 async def is_break(usid, chat):
-    start = time()
     inventory = ut.select_inventory(id=usid, chat=chat)
     breaks = random.choices([False, True], [100, 10], k=1)[0]
     if breaks:
@@ -85,13 +82,14 @@ async def is_break(usid, chat):
         else:
             text = "У осла разорвалось очко, и ты не можешь его ипать 4 часа!"
     else:
-        text = "Следующая попытка через час!"
-    stop = time() - start
+        if inventory["energy"] == 1:
+            text = "Следующая попытка через полчаса!"
+        else:
+            text = "Следующая попытка через час!"
     return text, breaks
 
 
 async def random_item(usid, chat):
-    start = time()
     inventory = ut.select_inventory(id=usid, chat=chat)
     chancelist = ["", "coins"]
     chancelist.extend(ut.itemlist)
@@ -102,14 +100,11 @@ async def random_item(usid, chat):
         itemrandom = random.randint(1, 3)
         ut.update("inventory", chance, itemrandom, "user_id", usid, "+")
         idlist = chancelist.index(chance)
-        stop = time() - start
         return [itemrandom, ending(nameslist[idlist][0], nameslist[idlist][1], nameslist[idlist][2], itemrandom)]
-    stop = time() - start
     return False, False
 
 
 async def handle_delay(usid, chat):
-    start = time()
     inventory = ut.select_inventory(id=usid, chat=chat)
     if inventory["viagra_use"] == 1:
         ut.update(chat, "time", 0, "user_id", usid)
@@ -124,20 +119,16 @@ async def handle_delay(usid, chat):
         if int(timer) - int(time()) <= 0:
             ut.update(chat, "time", 0, "user_id", usid)
             ut.update(chat, "break", 0, "user_id", usid)
-            stop = time() - start
             return False
         else:
-            stop = time() - start
             return await time_parse(timer)
     else:
-        stop = time() - start
         return False
 
 
 async def set_delay(usid, chat, randomik):
     inventory = ut.select_inventory(id=usid, chat=chat)
     times = int(time()) + 3600
-    start = time()
     if inventory["break"] != 1:
         if inventory["energy"] == 1:
             times = int(time()) + 1800
@@ -151,10 +142,8 @@ async def set_delay(usid, chat, randomik):
             ut.update(chat, "time", int(time()) + 7200, "user_id", usid)
         else:
             ut.update(chat, "time", int(time()) + 14400, "user_id", usid)
-    stop = time() - start
 
 async def time_parse(timer):
-    start = time()
     sec = int(timer) - int(time())
     mins = int(sec / 60)
     hours = int(mins / 60)
@@ -166,7 +155,6 @@ async def time_parse(timer):
            text = f"Приходи через {mins} {ending('минуту', 'минуты', 'минут', mins)}."
         else:
             text = f"Приходи через {sec} {ending('секунду', 'секунды', 'секунд', sec)}."
-    stop = time() - start
     return text
 
 
