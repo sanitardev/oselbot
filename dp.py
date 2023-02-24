@@ -10,7 +10,8 @@ from config import token
 from utils import *
 import logging
 from filters import IsAdminFilter, IsGroupFilter, IsBanFilter, IsPrivateFilter
-
+import time
+from collections import deque
 
 logging.basicConfig(level=logging.INFO)
 bot = Bot(token=token, parse_mode="HTML")
@@ -38,7 +39,7 @@ async def exception_handler(update: types.Update, exception: RetryAfter):
     try:
         user = update.message.from_user.id
         who = await bot.get_chat_member(update.message.chat.id, user)
-        logging.warn (f"Спам от {who}")
+        logging.warning(f"Спам от {who}")
     except:
         pass
 
@@ -82,9 +83,12 @@ class ThrottlingMiddleware(BaseMiddleware):
     Simple middleware
     """
 
-    def __init__(self, limit=DEFAULT_RATE_LIMIT, key_prefix='antiflood_'):
+    def __init__(self, limit=2, key_prefix='antiflood_', max_requests: int = 1, time_period: int = 3):
         self.rate_limit = limit
         self.prefix = key_prefix
+        self.max_requests = max_requests
+        self.time_period = time_period
+        self.requests = deque()
         super(ThrottlingMiddleware, self).__init__()
 
     async def on_process_message(self, message: types.Message, data: dict):
@@ -114,6 +118,15 @@ class ThrottlingMiddleware(BaseMiddleware):
 
             # Cancel current handler
             raise CancelHandler()
+
+    async def on_pre_process_callback_query(self, query: types.CallbackQuery, data, *args):
+        now = time.time()
+        while self.requests and self.requests[0] < now - self.time_period:
+            self.requests.popleft()
+        if len(self.requests) >= self.max_requests:
+            await query.answer(f"❗️ таймаут нажатий {self.time_period} секунды ❗️", show_alert=True)
+            raise CancelHandler()
+        self.requests.append(now)
 
     async def message_throttled(self, message: types.Message, throttled: Throttled):
         """
