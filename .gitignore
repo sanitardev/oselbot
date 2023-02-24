@@ -7,4 +7,7 @@ backup.zip
 .fleet/
 .idea/
 .env
+.github
 .github/workflows
+.github/workflows/tg.yml
+images/skins/
