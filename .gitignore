@@ -1,8 +1,10 @@
 db/
 db/database.db
+cache.pickle
 __pycache__/
 handlers/__pycache__/
 backup.zip
-.fleet
-.fleet/run.json
+.fleet/
+.idea/
 .env
+.github/workflows
