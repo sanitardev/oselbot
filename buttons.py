@@ -1,16 +1,19 @@
 from aiogram import types
 from utils import Utils
 from cache import cache
+
 ut = Utils()
 
-#@cache()
+
+@cache()
 def start_button():
     keyboard = types.InlineKeyboardMarkup()
     button = types.InlineKeyboardButton(text='Добавить бота в чат', url='http://t.me/ipanieaslabot?startgroup=hbase')
     keyboard.add(button)
     return keyboard
 
-#@cache()
+
+@cache()
 def add_inline(list):
     keyboard = types.InlineKeyboardMarkup(row_width=1)
     buttons = []
@@ -19,12 +22,15 @@ def add_inline(list):
     keyboard.add(*buttons)
     return keyboard
 
-#@cache()
+
+@cache()
 def add_buttons(buttons: list):
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     keyboard.add(*buttons)
     return keyboard
 
+
+@cache()
 def button(inv, ut):
     keyboard = types.InlineKeyboardMarkup(row_width=1)
     endslist = ut.endslist
@@ -41,7 +47,8 @@ def button(inv, ut):
                                                     callback_data=datalist[itemslist.index(item)]))
     return keyboard
 
-#@cache()
+
+@cache()
 def shop_button():
     keyboard = types.InlineKeyboardMarkup(row_width=1)
     products = ut.select("products", ["id", "name", "price"], "type", "passive", many=True)
@@ -50,7 +57,8 @@ def shop_button():
     keyboard.add(types.InlineKeyboardButton(text="Назад", callback_data="shop_back"))
     return keyboard
 
-#@cache()
+
+@cache()
 def items_button():
     keyboard = types.InlineKeyboardMarkup(row_width=1)
     products = ut.select("products", ["id", "name", "price"], "type", "item", many=True)
@@ -59,7 +67,8 @@ def items_button():
     keyboard.add(types.InlineKeyboardButton(text="Назад", callback_data="shop_back"))
     return keyboard
 
-#@cache()
+
+@cache()
 def skins_button():
     keyboard = types.InlineKeyboardMarkup(row_width=1)
     products = ut.select("products", ["id", "name", "price"], "type", "skin", many=True)
@@ -68,7 +77,8 @@ def skins_button():
     keyboard.add(types.InlineKeyboardButton(text="Назад", callback_data="shop_back"))
     return keyboard
 
-#@cache()
+
+@cache()
 def pass_button():
     keyboard = types.InlineKeyboardMarkup(row_width=1)
     keyboard.add(types.InlineKeyboardButton(text=f"Забрать награду", callback_data="pickup_reward"))
