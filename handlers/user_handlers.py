@@ -7,7 +7,7 @@ from time import time
 from collections import Counter
 import re
 from aiogram import md
-
+import config
 ut = Utils()
 
 
@@ -348,7 +348,7 @@ async def stat(message: types.Message):
     skin = ut.skin_stickers["skin" + str(skin_id)]
     await message.reply_sticker(sticker=skin)
 
-    await message.reply(bold(f"""Статистика {mention(message)}:
+    await message.reply(bold(f"""{'[РАЗРАБОТЧИК]' if message.from_user.id in config.admin_ids else ''}\nСтатистика {mention(message)}:
 
 Кол-во ипаний асла🎉
 • {balance}
