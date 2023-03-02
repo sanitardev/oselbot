@@ -65,9 +65,10 @@ class Utils:
         self.conn = sqlite3.connect("db/database.db")
         self.cur = self.conn.cursor()
         self.conn.isolation_level = None
-        
-    def close (self):
-        self.conn.close ()
+
+    def close(self):
+        self.conn.close()
+
     removetables = [("admins",), ("inventory",), ("keys",), ("private",), ("products",)]
     oselpass = [[2, "viagra", "💊"], [5, "condoms", "🍌"], [2, "morfin", "🧪"], [3, "beer", "🍺"], [4, "vodka", "🍾"],
                 [5, "viagra", "💊"], [1, "pornfilm", "🎬"], [4, "beer", "🍺"], [5, "vodka", "🍾"], [5, "viagra", "💊"],
@@ -172,7 +173,11 @@ class Utils:
             if many:
                 res_select = self.cur.fetchall()
             else:
-                res_select = self.cur.fetchone()[0]
+                res_select = self.cur.fetchone()
+                if len(res_select) < 2:
+                    res_select = res_select[0]
+                else:
+                    res_select = res_select
         except:
             res_select = None
         return res_select
