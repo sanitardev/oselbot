@@ -407,8 +407,7 @@ async def trade(message: types.Message):
     if reply_usid == usid:
         await message.reply(bold("Ты не можешь передать предмет самому себе!"))
         return
-    trades.info(
-        f"[{message.from_user.id}({message.from_user.full_name})] --> [{message.reply_to_message.from_user.id}({message.reply_to_message.full_name})]")
+
     it_name = item_list[emoji_list.index(text[0])]
     item = ut.select("inventory", it_name, "user_id", usid)
 
@@ -431,6 +430,8 @@ async def trade(message: types.Message):
         return
     ut.update("inventory", it_name, text[1], "user_id", reply_usid, "+")
     ut.update("inventory", it_name, text[1], "user_id", usid, "-")
+    trades.info(
+        f"[{message.from_user.id}({message.from_user.full_name})] {text[0]}{text[1]}--> [{message.reply_to_message.from_user.id}({message.reply_to_message.from_user.full_name})]")
     await message.reply(bold(
         f"Я успешно передал пользователю {mention_reply(message)}, {text[1]} {ending(endslist[item_list.index(it_name)][0], endslist[item_list.index(it_name)][1], endslist[item_list.index(it_name)][2], int(text[1]))}{text[0]}!"))
 
@@ -579,7 +580,8 @@ async def usekey(message: types.Message):
     if len(text) == 1:
         key = text[0]
         max_uses = ut.select("keys", "maxuses", "key", key)
-        all.info(f"[{await log_time(datetime.now())}][{message.from_user.id}({message.from_user.full_name})] usekey {key}")
+        all.info(
+            f"[{await log_time(datetime.now())}][{message.from_user.id}({message.from_user.full_name})] usekey {key}")
         if max_uses == None:
             await message.reply(bold("Ключ неверный!"))
             return
