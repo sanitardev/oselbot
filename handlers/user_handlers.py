@@ -8,13 +8,23 @@ from collections import Counter
 import re
 from aiogram import md
 import config
+from config import trades
+from config import all
+from datetime import datetime
+
 ut = Utils()
+
+
+async def log_time(time):
+    return time.strftime("%I:%M")
 
 
 @rate_limit(2, "start")
 @dp.message_handler(commands=['start'])
 async def start(message: types.Message):
+    all.info(f"[{await log_time(datetime.now())}][{message.from_user.id}({message.from_user.full_name})] start")
     if message.chat.type == 'private':
+
         ut.insert_to_private(message)
         text = "С моими командами, можно ознокомится командой — /help."
     else:
@@ -69,7 +79,6 @@ async def random_ipaniy(usid, chat):
     else:
         text = f"у тебя не получилось выипать асла."
     return text, balance, randomik
-
 
 
 async def is_break(usid, chat):
@@ -143,25 +152,28 @@ async def set_delay(usid, chat, randomik):
         else:
             ut.update(chat, "time", int(time()) + 14400, "user_id", usid)
 
+
 async def time_parse(timer):
     sec = int(timer) - int(time())
     mins = int(sec / 60)
     hours = int(mins / 60)
     mins = int(mins % 60)
     if not hours == 0:
-       text = f"Приходи через {hours} {ending('час', 'часа', 'часов', hours)} {mins} {ending('минуту', 'минуты', 'минут', mins)}."
+        text = f"Приходи через {hours} {ending('час', 'часа', 'часов', hours)} {mins} {ending('минуту', 'минуты', 'минут', mins)}."
     else:
         if not mins == 0:
-           text = f"Приходи через {mins} {ending('минуту', 'минуты', 'минут', mins)}."
+            text = f"Приходи через {mins} {ending('минуту', 'минуты', 'минут', mins)}."
         else:
             text = f"Приходи через {sec} {ending('секунду', 'секунды', 'секунд', sec)}."
     return text
 
 
 @rate_limit(2, "osel")
-@dp.message_handler(Text(["osel", "асёл", "асел", "осел", "осёл", "аслина", "ослина"], ignore_case=True), is_group=True, is_ban=False)
+@dp.message_handler(Text(["osel", "асёл", "асел", "осел", "осёл", "аслина", "ослина"], ignore_case=True), is_group=True,
+                    is_ban=False)
 @dp.message_handler(is_group=True, is_ban=False, commands=['osel', 'asel'])
 async def osel(message: types.Message):
+    all.info(f"[{await log_time(datetime.now())}][{message.from_user.id}({message.from_user.full_name})] osel")
     chat = str(message.chat.id)
     usid = message.from_user.id
     ut.create_table(message)
@@ -201,11 +213,11 @@ async def osel(message: types.Message):
     await set_delay(usid, chat, randomik)
 
 
-
 @rate_limit(2, "bonus")
 @dp.message_handler(Text(["Бонус", "Bonus"], ignore_case=True), is_group=True, is_ban=False)
 @dp.message_handler(is_group=True, is_ban=False, commands=['bonus'])
 async def bonus(message: types.Message):
+    all.info(f"[{await log_time(datetime.now())}][{message.from_user.id}({message.from_user.full_name})] bonus")
     chat = str(message.chat.id)
     usid = message.from_user.id
     times = int(time()) + 86400
@@ -252,6 +264,7 @@ async def bonus(message: types.Message):
 @dp.message_handler(Text(["Рейтинг", "Топ", "Top"], ignore_case=True), is_group=True)
 @dp.message_handler(is_group=True, commands="top")
 async def top(message: types.Message):
+    all.info(f"[{await log_time(datetime.now())}][{message.from_user.id}({message.from_user.full_name})] top")
     chat = str(message.chat.id)
     usid = message.from_user.id
     top = ""
@@ -284,6 +297,7 @@ async def top(message: types.Message):
                          ignore_case=True), is_group=True)
 @dp.message_handler(is_group=True, commands="globaltop")
 async def globaltop(message: types.Message):
+    all.info(f"[{await log_time(datetime.now())}][{message.from_user.id}({message.from_user.full_name})] globaltop")
     top = ""
     num = 2
     info = ut.select_globaltop()
@@ -309,6 +323,7 @@ async def globaltop(message: types.Message):
 @dp.message_handler(Text(["Help", "Помощь"], ignore_case=True))
 @dp.message_handler(commands="help")
 async def help(message: types.Message):
+    all.info(f"[{await log_time(datetime.now())}][{message.from_user.id}({message.from_user.full_name})] help")
     await message.reply(bold(f"""Мои команды:
 /start — начать
 /osel — выипать асла
@@ -324,9 +339,11 @@ async def help(message: types.Message):
 
 
 @rate_limit(2, "stat")
-@dp.message_handler(Text(["Statistics", "Stat", "Стат", "Стата", "Статистика"], ignore_case=True), is_group=True, is_ban=False)
+@dp.message_handler(Text(["Statistics", "Stat", "Стат", "Стата", "Статистика"], ignore_case=True), is_group=True,
+                    is_ban=False)
 @dp.message_handler(is_group=True, is_ban=False, commands=["stat", "statistics"])
 async def stat(message: types.Message):
+    all.info(f"[{await log_time(datetime.now())}][{message.from_user.id}({message.from_user.full_name})] stat")
     chat = str(message.chat.id)
     usid = message.from_user.id
     inv = ""
@@ -348,7 +365,8 @@ async def stat(message: types.Message):
     skin = ut.skin_stickers["skin" + str(skin_id)]
     await message.reply_sticker(sticker=skin)
 
-    await message.reply(bold(f"""{'[РАЗРАБОТЧИК]' if message.from_user.id in config.admin_ids else ''}\nСтатистика {mention(message)}:
+    await message.reply(
+        bold(f"""{'[РАЗРАБОТЧИК]' if message.from_user.id in config.admin_ids else ''}\nСтатистика {mention(message)}:
 
 Кол-во ипаний асла🎉
 • {balance}
@@ -363,6 +381,7 @@ async def stat(message: types.Message):
 @rate_limit(2, "trade")
 @dp.message_handler(is_group=True, is_ban=False, commands="trade")
 async def trade(message: types.Message):
+    all.info(f"[{await log_time(datetime.now())}][{message.from_user.id}({message.from_user.full_name})] trade")
     if message.chat.type == 'private':
         await message.reply("Меня можно юзать только в чатах!", reply_markup=start_button())
         return
@@ -388,6 +407,8 @@ async def trade(message: types.Message):
     if reply_usid == usid:
         await message.reply(bold("Ты не можешь передать предмет самому себе!"))
         return
+    trades.info(
+        f"[{message.from_user.id}({message.from_user.full_name})] --> [{message.reply_to_message.from_user.id}({message.reply_to_message.full_name})]")
     it_name = item_list[emoji_list.index(text[0])]
     item = ut.select("inventory", it_name, "user_id", usid)
 
@@ -417,6 +438,7 @@ async def trade(message: types.Message):
 @rate_limit(2, "shop")
 @dp.message_handler(is_group=True, commands="shop")
 async def shop(message: types.Message):
+    all.info(f"[{await log_time(datetime.now())}][{message.from_user.id}({message.from_user.full_name})] shop")
     await message.reply(bold("► Магазин🏪 ◄"),
                         reply_markup=add_inline([["Предметы", "passive"], ["Скины", "skins"], ["Расходники", "items"]]))
 
@@ -443,6 +465,7 @@ async def shop_handler(call: types.CallbackQuery):
 @dp.message_handler(Text(["Юз", "Use", "заюзать"], ignore_case=True), is_group=True, is_ban=False)
 @dp.message_handler(is_group=True, is_ban=False, commands="use")
 async def use(message: types.Message):
+    all.info(f"[{await log_time(datetime.now())}][{message.from_user.id}({message.from_user.full_name})] use")
     ut.create_table(message)
     try:
         text = message.get_args().split()
@@ -492,6 +515,7 @@ async def use(message: types.Message):
 @rate_limit(2, "pass")
 @dp.message_handler(is_group=True, is_ban=False, commands="pass")
 async def oselpass(message: types.Message):
+    all.info(f"[{await log_time(datetime.now())}][{message.from_user.id}({message.from_user.full_name})] pass")
     usid = message.from_user.id
     ut.create_table(message)
     inv = ut.select_inventory(message)
@@ -555,6 +579,7 @@ async def usekey(message: types.Message):
     if len(text) == 1:
         key = text[0]
         max_uses = ut.select("keys", "maxuses", "key", key)
+        all.info(f"[{await log_time(datetime.now())}][{message.from_user.id}({message.from_user.full_name})] usekey {key}")
         if max_uses == None:
             await message.reply(bold("Ключ неверный!"))
             return
@@ -599,6 +624,7 @@ async def use(call: types.CallbackQuery):
         item = ut.select("inventory", call.data, "user_id", usid)
         if item == None:
             return
+
         coins = ut.select("inventory", "coins", "user_id", usid)
         price = ut.select("products", "price", "id", call.data)
         if item == 1:

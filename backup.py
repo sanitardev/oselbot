@@ -3,6 +3,8 @@ import asyncio
 import os
 from zipfile import ZipFile
 from dp import bot
+from config import all
+from config import trades
 
 
 async def backup():
@@ -19,8 +21,14 @@ async def backup():
         await asyncio.sleep(1.5)
 
 
+async def flush():
+    all.flush()
+    trades.flush()
+
+
 async def scheduler():
     aioschedule.every(5).minutes.do(backup)
+    aioschedule.every(15).seconds.do(flush)
     while True:
         await aioschedule.run_pending()
         await asyncio.sleep(1)
