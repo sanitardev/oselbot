@@ -104,7 +104,7 @@ async def random_item(usid, chat):
     chancelist.extend(ut.itemlist)
     nameslist = ["", ["оселкоин", "оселкоина", "оселкоинов"]]
     nameslist.extend(ut.endslist)
-    chance = random.choices(chancelist, [40 if inventory["vibrator"] == 1 else 80, 40] + ut.chancelist, k=1)[0]
+    chance = random.choices(chancelist, [60 if inventory["vibrator"] == 1 else 85, 30] + ut.chancelist, k=1)[0]
     if chance != "":
         itemrandom = random.randint(1, 3)
         ut.update("inventory", chance, itemrandom, "user_id", usid, "+")
@@ -238,7 +238,7 @@ async def bonus(message: types.Message):
         else:
             await message.reply(bold(await time_parse(timer)))
             return
-    bonus = random.choices(bonus_list, [35 if inventory["vibrator"] == 1 else 70, 40, 30] + ut.chancelist, k=3)
+    bonus = random.choices(bonus_list, [60 if inventory["vibrator"] == 1 else 80, 30, 20] + ut.chancelist, k=3)
     bonlist = []
     for bon in bonus:
         if bon == "":
