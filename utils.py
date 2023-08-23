@@ -158,7 +158,7 @@ class Utils:
         if mark is not None:
             self.cur.execute(f"UPDATE '{table}' SET {column} = {column} {mark} '{value}' WHERE {where} = '{wherewhat}'")
         else:
-            self.cur.execute(f"UPDATE '{table}' SET {column} = '{value}' WHERE {where} = '{wherewhat}'")
+            self.cur.execute(f"UPDATE '{table}' SET {column} = (?) WHERE {where} = '{wherewhat}'", (value,))
 
     def select(self, table, column, wherewhat=None, where=None, many=False):
 
